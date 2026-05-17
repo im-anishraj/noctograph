@@ -63,6 +63,7 @@ web_modules/
 blackbox-sessions/
 .blackbox-smoke/
 storybook-static/
+dist-binaries/
 
 # Output of 'npm pack'
 *.tgz

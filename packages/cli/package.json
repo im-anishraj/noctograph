@@ -1,8 +1,19 @@
 {
   "name": "agent-blackbox",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "license": "MIT",
+  "main": "./dist/index.js",
+  "files": ["dist"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/im-anishraj/noctograph.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/im-anishraj/noctograph#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "agent-blackbox": "./dist/index.js"
   },
@@ -20,7 +31,7 @@
     "dev": "tsx src/index.ts"
   },
   "dependencies": {
-    "@agent-blackbox/core": "workspace:*",
+    "agent-blackbox-core": "workspace:*",
     "commander": "^14.0.0",
     "node-pty": "^1.1.0",
     "simple-git": "^3.28.0"

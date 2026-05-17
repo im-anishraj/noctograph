@@ -1,6 +1,6 @@
 {
   "name": "@agent-blackbox/viewer",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "private": true,
   "license": "MIT",
@@ -14,7 +14,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@agent-blackbox/core": "workspace:*",
+    "agent-blackbox-core": "workspace:*",
     "@tanstack/react-virtual": "^3.13.24",
     "@vitejs/plugin-react": "^4.5.0",
     "diff2html": "^3.4.56",

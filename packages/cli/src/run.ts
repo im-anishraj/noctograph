@@ -1,4 +1,4 @@
-import { RedactionEngine, type BlackboxEvent, type BlackboxEventType } from "@agent-blackbox/core";
+import { RedactionEngine, type BlackboxEvent, type BlackboxEventType } from "agent-blackbox-core";
 import { randomUUID } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
@@ -56,6 +56,7 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
   let closed = false;
   let exitCode: number | null = null;
   let signal: string | null = null;
+  let snapshotFlush = Promise.resolve();
 
   const writeEvent = async (type: BlackboxEventType, payload: BlackboxEvent["payload"]) => {
     await writer.write({
@@ -67,7 +68,11 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
     } as BlackboxEvent);
   };
 
-  const flushSnapshots = async () => {
+  const flushSnapshots = async (force = false) => {
+    if (closed && !force) {
+      return;
+    }
+
     const snapshots = await snapshotter.captureChangedFiles();
     for (const snapshot of snapshots) {
       await writeEvent("FileSnapshot", {
@@ -79,6 +84,20 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
         hash: snapshot.hash
       });
     }
+  };
+
+  const queueSnapshotFlush = () => {
+    snapshotFlush = snapshotFlush.then(() => flushSnapshots()).catch(async (cause: unknown) => {
+      if (!closed) {
+        await writeEvent("ErrorEvent", {
+          name: cause instanceof Error ? cause.name : "SnapshotError",
+          message: cause instanceof Error ? cause.message : "Snapshot flush failed",
+          stack: cause instanceof Error ? cause.stack : undefined
+        });
+      }
+    });
+
+    return snapshotFlush;
   };
 
   const finish = async () => {
@@ -93,7 +112,8 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
     process.off("SIGINT", onSignal);
     process.off("SIGTERM", onSignal);
 
-    await flushSnapshots();
+    await snapshotFlush;
+    await flushSnapshots(true);
     if (redactionEngine) {
       await writeEvent("AgentMessage", {
         role: "system",
@@ -137,7 +157,7 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
   });
 
   const pollTimer = setInterval(() => {
-    void flushSnapshots();
+    void queueSnapshotFlush();
   }, options.pollIntervalMs ?? 2000);
 
   process.stdin.on("data", onStdin);

@@ -1,6 +1,6 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef } from "react";
-import type { BlackboxEvent } from "@agent-blackbox/core";
+import type { BlackboxEvent } from "agent-blackbox-core";
 import { EventCard } from "./EventCard.js";
 
 export function EventTimeline({ events }: { events: BlackboxEvent[] }) {

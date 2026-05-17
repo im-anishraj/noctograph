@@ -48,4 +48,16 @@ describe("GitSnapshotter", () => {
 
     expect((await snapshotter.captureChangedFiles()).map((snapshot) => snapshot.path)).toEqual(["file.txt"]);
   });
+
+  it("skips very large file contents", async () => {
+    const dir = path.join(os.tmpdir(), `blackbox-git-large-${Date.now()}`);
+    await mkdir(dir, { recursive: true });
+    const git = simpleGit({ baseDir: dir });
+    await git.init();
+    await writeFile(path.join(dir, "large.txt"), "x".repeat(1_000_001));
+
+    const snapshots = await new GitSnapshotter(dir).captureChangedFiles();
+
+    expect(snapshots[0]).toMatchObject({ path: "large.txt", content: "[SKIPPED:file too large]" });
+  });
 });

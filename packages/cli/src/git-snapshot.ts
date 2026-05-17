@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { simpleGit, type SimpleGit } from "simple-git";
 
@@ -15,6 +15,7 @@ export class GitSnapshotter {
   private readonly git: SimpleGit;
   private seen = new Map<string, string | null>();
   private readonly ignoredPathPrefixes: string[];
+  private readonly maxFileBytes: number;
 
   constructor(
     private readonly cwd: string,
@@ -22,6 +23,7 @@ export class GitSnapshotter {
   ) {
     this.git = simpleGit({ baseDir: cwd, binary: "git" });
     this.ignoredPathPrefixes = (options.ignoredPathPrefixes ?? []).map(normalizePath);
+    this.maxFileBytes = 1_000_000;
   }
 
   async baselineHash(): Promise<string | null> {
@@ -66,7 +68,8 @@ export class GitSnapshotter {
     let exists = true;
 
     try {
-      content = await readFile(absolute, "utf8");
+      const fileStat = await stat(absolute);
+      content = fileStat.size > this.maxFileBytes ? "[SKIPPED:file too large]" : await readFile(absolute, "utf8");
     } catch {
       exists = false;
     }
