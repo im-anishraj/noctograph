@@ -1,5 +1,5 @@
-import type { BlackboxEvent } from "@agent-blackbox/core";
-import { blackboxEventSchema } from "@agent-blackbox/core";
+import type { BlackboxEvent } from "agent-blackbox-core";
+import { blackboxEventSchema } from "agent-blackbox-core";
 import { mkdir, open, type FileHandle } from "node:fs/promises";
 import path from "node:path";
 

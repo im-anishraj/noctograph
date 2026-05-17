@@ -1,6 +1,6 @@
 import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
-import type { BlackboxEvent, BlackboxEventType, RiskSeverity } from "@agent-blackbox/core";
+import type { BlackboxEvent, BlackboxEventType, RiskSeverity } from "agent-blackbox-core";
 import { EventTimeline } from "./components/EventTimeline.js";
 import { FilterBar } from "./components/FilterBar.js";
 import { RiskSidebar } from "./components/RiskSidebar.js";

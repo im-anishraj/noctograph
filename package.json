@@ -1,6 +1,6 @@
 {
   "name": "noctograph",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Local-first flight recorder for AI coding agents.",
   "license": "MIT",
@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "pnpm -r build",
+    "build:binaries": "pnpm --filter agent-blackbox build && node -e \"require('fs').rmSync('dist-binaries',{recursive:true,force:true})\" && pnpm exec esbuild packages/cli/dist/pkg-entry.js --bundle --platform=node --format=cjs --target=node24 --define:import.meta.url=undefined --outfile=packages/cli/dist/agent-blackbox.cjs --external:node-pty && pnpm exec pkg packages/cli/dist/agent-blackbox.cjs --out-path dist-binaries --targets node24-linux-x64,node24-macos-x64,node24-win-x64 --public-packages \"*\"",
     "check": "pnpm -r check",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
@@ -17,6 +18,8 @@
   },
   "devDependencies": {
     "@types/node": "^24.12.4",
+    "@yao-pkg/pkg": "^6.19.0",
+    "esbuild": "^0.27.7",
     "typescript": "^5.8.3",
     "vitest": "^3.1.4"
   }

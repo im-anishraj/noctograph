@@ -4,7 +4,7 @@ import { Command } from "commander";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { parsePatternFile } from "@agent-blackbox/core";
+import { parsePatternFile } from "agent-blackbox-core";
 import { runBlackbox } from "./run.js";
 
 export const cliPackageName = "agent-blackbox";
@@ -41,6 +41,15 @@ export function buildProgram(): Command {
   return program;
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
-  await buildProgram().parseAsync(process.argv);
+export async function runCli(argv = process.argv): Promise<void> {
+  await buildProgram().parseAsync(argv);
+}
+
+function reportCliError(error: unknown): void {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = 1;
+}
+
+if (typeof import.meta.url === "string" && process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
+  void runCli().catch(reportCliError);
 }
