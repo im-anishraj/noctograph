@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "type": "module",
   "license": "MIT",
-  "main": "./dist/index.js",
+  "main": "./dist/index.bundle.cjs",
   "files": ["dist"],
   "repository": {
     "type": "git",
@@ -15,29 +15,30 @@
     "access": "public"
   },
   "bin": {
-    "agent-blackbox": "./dist/index.js"
+    "agent-blackbox": "./dist/index.bundle.cjs"
   },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.bundle.cjs"
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && esbuild dist/pkg-entry.js --bundle --platform=node --format=cjs --target=node24 --define:import.meta.url=undefined --outfile=dist/index.bundle.cjs --external:node-pty",
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
     "lint": "tsc -p tsconfig.json --noEmit",
     "dev": "tsx src/index.ts"
   },
   "dependencies": {
-    "agent-blackbox-core": "workspace:*",
     "commander": "^14.0.0",
     "node-pty": "^1.1.0",
     "simple-git": "^3.28.0"
   },
   "devDependencies": {
+    "agent-blackbox-core": "workspace:*",
     "@types/node": "^24.12.4",
+    "esbuild": "^0.27.7",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "vitest": "^3.1.4"
