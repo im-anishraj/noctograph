@@ -1,4 +1,3 @@
-import path from "node:path";
 import {
   blackboxEventSchema,
   type BlackboxEvent,
@@ -173,7 +172,7 @@ export function defaultRiskRules(): RiskRule[] {
       severity: "medium",
       detect(events) {
         return fileSnapshots(events)
-          .filter((event) => path.basename(event.payload.path).toLowerCase() === "license")
+          .filter((event) => basename(event.payload.path).toLowerCase() === "license")
           .map((event) => finding("license_change", "medium", `License file modified: ${event.payload.path}`, event.ts));
       }
     },
@@ -182,7 +181,7 @@ export function defaultRiskRules(): RiskRule[] {
       severity: "high",
       detect(events) {
         return fileSnapshots(events)
-          .filter((event) => redactionEngine.isSecretPath(event.payload.path) && path.basename(event.payload.path).startsWith(".env"))
+          .filter((event) => redactionEngine.isSecretPath(event.payload.path) && basename(event.payload.path).startsWith(".env"))
           .map((event) => finding("env_write", "high", `Environment file written: ${event.payload.path}`, event.ts));
       }
     },
@@ -213,7 +212,7 @@ function finding(rule: RiskRuleId, severity: RiskSeverity, evidence: string, tim
 }
 
 function isLockfile(filePath: string): boolean {
-  return ["package-lock.json", "yarn.lock"].includes(path.basename(filePath));
+  return ["package-lock.json", "yarn.lock"].includes(basename(filePath));
 }
 
 function isTestFile(filePath: string): boolean {
@@ -225,12 +224,13 @@ function isOutsideScope(filePath: string, cwd: string | undefined): boolean {
     return true;
   }
 
-  if (!cwd || !path.isAbsolute(filePath)) {
+  if (!cwd || !isAbsolutePath(filePath)) {
     return false;
   }
 
-  const relative = path.relative(cwd, filePath);
-  return relative.startsWith("..") || path.isAbsolute(relative);
+  const normalizedCwd = normalizePath(cwd).replace(/\/+$/, "");
+  const normalizedFile = normalizePath(filePath);
+  return normalizedFile !== normalizedCwd && !normalizedFile.startsWith(`${normalizedCwd}/`);
 }
 
 function removedLineCount(diff: string | null): number {
@@ -242,4 +242,16 @@ function removedLineCount(diff: string | null): number {
 function compareFindings(a: RiskFinding, b: RiskFinding): number {
   const severityOrder: Record<RiskSeverity, number> = { high: 0, medium: 1, low: 2 };
   return severityOrder[a.severity] - severityOrder[b.severity] || a.timestamp.localeCompare(b.timestamp);
+}
+
+function basename(filePath: string): string {
+  return normalizePath(filePath).split("/").at(-1) ?? filePath;
+}
+
+function normalizePath(filePath: string): string {
+  return filePath.replaceAll("\\", "/");
+}
+
+function isAbsolutePath(filePath: string): boolean {
+  return /^([A-Za-z]:)?\//.test(normalizePath(filePath));
 }

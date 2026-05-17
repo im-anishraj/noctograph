@@ -62,6 +62,7 @@ web_modules/
 # Agent Blackbox local session output
 blackbox-sessions/
 .blackbox-smoke/
+storybook-static/
 
 # Output of 'npm pack'
 *.tgz
