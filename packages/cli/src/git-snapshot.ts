@@ -33,7 +33,13 @@ export class GitSnapshotter {
   }
 
   async changedFiles(): Promise<string[]> {
-    const status = await this.git.status();
+    let status;
+    try {
+      status = await this.git.status();
+    } catch {
+      return [];
+    }
+
     return [...new Set([...status.modified, ...status.created, ...status.deleted, ...status.not_added, ...status.renamed.map((item) => item.to)])]
       .filter((file) => !this.isIgnored(file))
       .sort();

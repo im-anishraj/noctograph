@@ -1,4 +1,4 @@
-import type { BlackboxEvent, BlackboxEventType } from "@agent-blackbox/core";
+import { RedactionEngine, type BlackboxEvent, type BlackboxEventType } from "@agent-blackbox/core";
 import { randomUUID } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
@@ -12,6 +12,7 @@ export interface RunOptions {
   cwd: string;
   outputDir: string;
   redact: boolean;
+  redactPatterns?: string[];
   pollIntervalMs?: number;
 }
 
@@ -21,8 +22,6 @@ export interface RunResult {
   sessionId: string;
   jsonlPath: string;
 }
-
-type Redactor = (value: string) => string;
 
 export async function runBlackbox(options: RunOptions): Promise<RunResult> {
   if (options.command.length === 0) {
@@ -40,7 +39,15 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
   const ignoredOutputRoot = path.relative(options.cwd, path.resolve(options.cwd, options.outputDir));
   const snapshotter = new GitSnapshotter(options.cwd, { ignoredPathPrefixes: [ignoredOutputRoot] });
   const gitHead = await snapshotter.baselineHash();
-  const redact: Redactor = (value) => value;
+  const redactionEngine = options.redact ? new RedactionEngine({ customPatterns: options.redactPatterns }) : null;
+  const redactText = (value: string) => redactionEngine?.redactText(value).text ?? value;
+  const redactFileContent = (filePath: string, value: string | null) => {
+    if (value === null) {
+      return null;
+    }
+
+    return redactionEngine?.redactFileContent(filePath, value).text ?? value;
+  };
 
   let ptyHandle: PtyHandle | null = null;
   let closed = false;
@@ -64,8 +71,8 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
         path: snapshot.path,
         phase: "after",
         exists: snapshot.exists,
-        content: snapshot.content === null ? null : redact(snapshot.content),
-        diff: snapshot.diff === null ? null : redact(snapshot.diff),
+        content: redactFileContent(snapshot.path, snapshot.content),
+        diff: redactFileContent(snapshot.path, snapshot.diff),
         hash: snapshot.hash
       });
     }
@@ -84,6 +91,13 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
     process.off("SIGTERM", onSignal);
 
     await flushSnapshots();
+    if (redactionEngine) {
+      await writeEvent("AgentMessage", {
+        role: "system",
+        text: `Redaction audit: ${JSON.stringify(redactionEngine.auditLog())}`
+      });
+    }
+
     await writeEvent("SessionEnd", {
       exitCode,
       signal,
@@ -106,7 +120,7 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
   };
 
   await writeEvent("SessionStart", {
-    command: options.command,
+    command: options.command.map(redactText),
     cwd: options.cwd,
     gitHead,
     outputDir: sessionDir,
@@ -114,8 +128,8 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
   });
 
   await writeEvent("CommandRun", {
-    command: options.command[0] ?? "",
-    args: options.command.slice(1),
+    command: redactText(options.command[0] ?? ""),
+    args: options.command.slice(1).map(redactText),
     cwd: options.cwd
   });
 
@@ -135,8 +149,8 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
         process.stdout.write(data);
         await writeEvent("CommandOutput", {
           stream: "stdout",
-          text: redact(stripAnsi(data)),
-          raw: redact(data),
+          text: redactText(stripAnsi(data)),
+          raw: redactText(data),
           truncated: false
         });
       },

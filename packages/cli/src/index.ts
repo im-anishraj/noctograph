@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { parsePatternFile } from "@agent-blackbox/core";
 import { runBlackbox } from "./run.js";
 
 export const cliPackageName = "agent-blackbox";
@@ -18,15 +20,19 @@ export function buildProgram(): Command {
     .option("--output-dir <dir>", "directory for session artifacts", "./blackbox-sessions")
     .option("--redact", "redact sensitive values before storing", true)
     .option("--no-redact", "disable redaction")
+    .option("--redact-patterns <path>", "path to newline-delimited custom redaction patterns")
     .allowUnknownOption(true)
     .allowExcessArguments(true)
     .argument("[command...]", "command to run after --")
-    .action(async (command: string[], options: { outputDir: string; redact: boolean }) => {
+    .action(async (command: string[], options: { outputDir: string; redact: boolean; redactPatterns?: string }) => {
+      const customPatterns =
+        options.redactPatterns === undefined ? undefined : parsePatternFile(await readFile(path.resolve(options.redactPatterns), "utf8"));
       const result = await runBlackbox({
         command,
         cwd: process.cwd(),
         outputDir: options.outputDir,
-        redact: options.redact
+        redact: options.redact,
+        redactPatterns: customPatterns
       });
 
       process.exit(result.exitCode ?? (result.signal ? 1 : 0));
