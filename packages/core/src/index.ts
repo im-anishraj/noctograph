@@ -1,1 +1,1 @@
-export const corePackageName = "@agent-blackbox/core";
+export * from "./events.js";
