@@ -59,6 +59,10 @@ web_modules/
 # Optional REPL history
 .node_repl_history
 
+# Agent Blackbox local session output
+blackbox-sessions/
+.blackbox-smoke/
+
 # Output of 'npm pack'
 *.tgz
 
