@@ -15,14 +15,39 @@ import {
   TimerReset
 } from "lucide-react";
 import type { CSSProperties } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import reportPreview from "../../../docs/demo-report.png";
-import { artifacts, captureEvents, metrics, riskRules, workflowSteps } from "./content";
+import { artifacts, captureEvents, liveCaptureLines, metrics, riskRules, terminalLines, workflowSteps } from "./content";
 
 const installCommand = "npm install -g nactograph";
 
 export function App() {
   const [copied, setCopied] = useState(false);
+  const rootRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const revealItems = Array.from(root.querySelectorAll<HTMLElement>("[data-reveal]"));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.setAttribute("data-visible", "true");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.16 }
+    );
+
+    revealItems.forEach((item) => observer.observe(item));
+
+    return () => observer.disconnect();
+  }, []);
 
   const copyInstall = async () => {
     await navigator.clipboard.writeText(installCommand);
@@ -31,9 +56,20 @@ export function App() {
   };
 
   return (
-    <main>
+    <main ref={rootRef}>
       <section className="hero" id="top">
-        <img className="heroPreview" src={reportPreview} alt="Nactograph session report preview" />
+        <div className="motionField" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="heroPreview" aria-hidden="true">
+          <img src={reportPreview} alt="" />
+          <span className="scanBeam" />
+          <span className="previewBadge previewBadgeOne">JSONL writing live</span>
+          <span className="previewBadge previewBadgeTwo">risk 12/100</span>
+        </div>
         <div className="heroWash" />
         <header className="nav" aria-label="Primary navigation">
           <a className="brand" href="#top" aria-label="Nactograph home">
@@ -52,8 +88,10 @@ export function App() {
         </header>
 
         <div className="heroInner">
-          <p className="eyebrow">Local-first flight recorder for AI coding agents</p>
-          <h1>Nactograph</h1>
+          <p className="eyebrow revealLine">Local-first flight recorder for AI coding agents</p>
+          <h1>
+            <span>Nactograph</span>
+          </h1>
           <p className="heroLead">
             Replay every command, terminal stream, file diff, redaction event, test result, and risk signal before agent-written
             code reaches review.
@@ -75,10 +113,18 @@ export function App() {
               {copied ? "Copied" : "Copy"}
             </button>
           </div>
+          <div className="liveRail" aria-label="Live capture preview">
+            {liveCaptureLines.map((line, index) => (
+              <article className={`liveLine tone-${line.tone}`} key={line.value} style={{ "--delay": `${index * 0.22}s` } as CSSProperties}>
+                <span>{line.label}</span>
+                <strong>{line.value}</strong>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="metricRail" aria-label="Product metrics">
+      <section className="metricRail" aria-label="Product metrics" data-reveal>
         {metrics.map((metric) => (
           <article key={metric.label}>
             <span>{metric.label}</span>
@@ -88,7 +134,15 @@ export function App() {
         ))}
       </section>
 
-      <section className="splitSection" id="flow">
+      <section className="eventMarquee" aria-label="Captured event stream">
+        <div className="marqueeTrack">
+          {[...captureEvents, ...captureEvents].map((eventName, index) => (
+            <span key={`${eventName}-${index}`}>{eventName}</span>
+          ))}
+        </div>
+      </section>
+
+      <section className="splitSection" id="flow" data-reveal>
         <div>
           <p className="eyebrow">Auditable by default</p>
           <h2>Turn agent sessions into evidence.</h2>
@@ -98,6 +152,7 @@ export function App() {
           </p>
         </div>
         <div className="flowCanvas" aria-label="Recorder workflow">
+          <span className="flowPulse" aria-hidden="true" />
           {workflowSteps.map((step, index) => (
             <article className="flowNode" key={step.title} style={{ "--step": index + 1 } as CSSProperties}>
               <span>{String(index + 1).padStart(2, "0")}</span>
@@ -108,7 +163,7 @@ export function App() {
         </div>
       </section>
 
-      <section className="reportSection">
+      <section className="reportSection" data-reveal>
         <div className="reportCopy">
           <p className="eyebrow">The artifact reviewers can trust</p>
           <h2>One run. Three files. Full replay.</h2>
@@ -123,10 +178,11 @@ export function App() {
         </div>
         <figure className="reportFrame">
           <img src={reportPreview} alt="Nactograph report showing command timeline and risk score" />
+          <span className="reportSweep" aria-hidden="true" />
         </figure>
       </section>
 
-      <section className="eventSection">
+      <section className="eventSection" data-reveal>
         <div className="sectionHeader">
           <p className="eyebrow">Structured recorder log</p>
           <h2>Event types that match how agents actually work.</h2>
@@ -141,7 +197,7 @@ export function App() {
         </div>
       </section>
 
-      <section className="splitSection riskSection" id="risk">
+      <section className="splitSection riskSection" id="risk" data-reveal>
         <div>
           <p className="eyebrow">Rules you can read</p>
           <h2>Risk detection without a mystery model.</h2>
@@ -161,7 +217,7 @@ export function App() {
         </div>
       </section>
 
-      <section className="privacySection">
+      <section className="privacySection" data-reveal>
         <div className="privacyCard">
           <LockKeyhole size={28} aria-hidden="true" />
           <h2>Local-first means local-first.</h2>
@@ -176,17 +232,17 @@ export function App() {
             <span />
             <span />
           </div>
-          <pre>{`$ nactograph run -- codex "fix failing auth tests"
-SessionStart      git: 367ec65
-CommandRun        codex fix failing auth tests
-CommandOutput     184 lines captured
-FileSnapshot      src/auth.test.ts  +42 -8
-RiskyAction       none
-SessionEnd        blackbox-report.html ready`}</pre>
+          <pre>
+            {terminalLines.map((line, index) => (
+              <span key={line} style={{ "--line": index } as CSSProperties}>
+                {line}
+              </span>
+            ))}
+          </pre>
         </div>
       </section>
 
-      <section className="artifactSection" id="artifacts">
+      <section className="artifactSection" id="artifacts" data-reveal>
         <div className="sectionHeader">
           <p className="eyebrow">Release-ready output</p>
           <h2>Drop the right artifact into the right conversation.</h2>
@@ -202,7 +258,7 @@ SessionEnd        blackbox-report.html ready`}</pre>
         </div>
       </section>
 
-      <section className="finalCta">
+      <section className="finalCta" data-reveal>
         <div>
           <PackageCheck size={30} aria-hidden="true" />
           <h2>Let agents code. Keep the black box.</h2>
