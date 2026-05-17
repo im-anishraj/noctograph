@@ -1,0 +1,29 @@
+name: Documentation
+description: Improve docs, examples, screenshots, or tutorials.
+title: "docs: "
+labels:
+  - type:docs
+  - area:docs
+body:
+  - type: textarea
+    id: gap
+    attributes:
+      label: Documentation gap
+      description: What is missing, unclear, or outdated?
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Audience
+      description: Who needs this documentation?
+      placeholder: New contributors, CLI users, maintainers, security reviewers...
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
