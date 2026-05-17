@@ -128,7 +128,7 @@ export const defaultRedactionRules: RedactionRule[] = [
   {
     id: "long_base64",
     description: "Generic long base64-like token",
-    pattern: /\b[A-Za-z0-9+/]{40,}={0,2}\b/g,
+    pattern: /(?<![A-Za-z0-9+/])[A-Za-z0-9+/]{40,}={0,2}(?![A-Za-z0-9+/=])/g,
     replacement: "[REDACTED:long_base64]"
   },
   {
