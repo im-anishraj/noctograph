@@ -1,4 +1,4 @@
-import type { BlackboxEvent, BlackboxEventType, RiskSeverity } from "agent-blackbox-core";
+import type { BlackboxEvent, BlackboxEventType, RiskSeverity } from "nactograph-core";
 
 const severities: Array<RiskSeverity | "All"> = ["All", "high", "medium", "low"];
 

@@ -56,4 +56,4 @@ jobs:
       - name: Publish CLI package
         run: |
           PACKAGE_VERSION="$(node -p "require('./packages/cli/package.json').version")"
-          npm publish "./dist-pack/agent-blackbox-${PACKAGE_VERSION}.tgz" --access public
+          npm publish "./dist-pack/nactograph-${PACKAGE_VERSION}.tgz" --access public

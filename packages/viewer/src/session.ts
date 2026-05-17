@@ -1,4 +1,4 @@
-import { RiskDetector, blackboxEventSchema, type BlackboxEvent } from "agent-blackbox-core";
+import { RiskDetector, blackboxEventSchema, type BlackboxEvent } from "nactograph-core";
 import type { FileChangeSummary, SessionReportData } from "./types.js";
 
 export function parseJsonlEvents(jsonl: string): BlackboxEvent[] {

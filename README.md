@@ -1,9 +1,9 @@
-# Agent Blackbox
+# Nactograph
 
 Local-first flight recorder for AI coding agents.
 
 ```sh
-agent-blackbox run -- codex "fix failing auth tests"
+nactograph run -- codex "fix failing auth tests"
 ```
 
 Outputs:
@@ -14,12 +14,12 @@ blackbox.jsonl
 blackbox-pr-comment.md
 ```
 
-![Agent Blackbox report](docs/demo-report.png)
+![Nactograph report](docs/demo-report.png)
 
 ## Install
 
 ```sh
-npm install -g agent-blackbox
+npm install -g nactograph
 ```
 
 Requires Node 24 or newer.
@@ -27,7 +27,7 @@ Requires Node 24 or newer.
 ## Quick Start
 
 ```sh
-agent-blackbox run -- codex "fix failing auth tests"
+nactograph run -- codex "fix failing auth tests"
 cd blackbox-sessions
 open */blackbox-report.html
 cat */blackbox-pr-comment.md
@@ -38,7 +38,7 @@ cat */blackbox.jsonl
 
 ```mermaid
 flowchart LR
-  A["agent-blackbox run"] --> B["PTY wrapper"]
+  A["nactograph run"] --> B["PTY wrapper"]
   B --> C["Agent command"]
   B --> D["JSONL event stream"]
   D --> E["Redaction engine"]
@@ -47,12 +47,12 @@ flowchart LR
   F --> H["PR comment"]
 ```
 
-Agent Blackbox runs the agent command in a pseudo-terminal so the session still feels normal. It records command output, git snapshots, diffs, dependency changes, test runs, redaction audit summaries, and risk findings into a local session folder.
+Nactograph runs the agent command in a pseudo-terminal so the session still feels normal. It records command output, git snapshots, diffs, dependency changes, test runs, redaction audit summaries, and risk findings into a local session folder.
 
 ## CLI
 
 ```sh
-agent-blackbox run [options] -- <command...>
+nactograph run [options] -- <command...>
 ```
 
 | Flag | Default | Description |
@@ -76,7 +76,7 @@ Default redaction catches common secret files, cloud tokens, GitHub and OpenAI k
 
 Each release publishes:
 
-- npm package: `agent-blackbox`
+- npm package: `nactograph`
 - bundled core runtime for schemas, redaction, and risk detection
 - binaries for Linux, macOS, and Windows
 
@@ -86,7 +86,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). This project uses Conventional Commits, 
 
 ## Launch Copy
 
-> I let an AI agent fix a bug. Agent Blackbox replayed every command, every file edit, and the exact moment it broke the tests.
+> I let an AI agent fix a bug. Nactograph replayed every command, every file edit, and the exact moment it broke the tests.
 
 ## License
 

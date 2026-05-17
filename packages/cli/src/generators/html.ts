@@ -1,4 +1,4 @@
-import type { BlackboxEvent } from "agent-blackbox-core";
+import type { BlackboxEvent } from "nactograph-core";
 import type { SessionReportData } from "./session.js";
 
 export function generateHtmlReport(data: SessionReportData): string {

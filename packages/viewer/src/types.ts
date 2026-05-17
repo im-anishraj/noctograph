@@ -1,4 +1,4 @@
-import type { BlackboxEvent, RiskFinding } from "agent-blackbox-core";
+import type { BlackboxEvent, RiskFinding } from "nactograph-core";
 
 export interface FileChangeSummary {
   path: string;

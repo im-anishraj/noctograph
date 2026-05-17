@@ -1,4 +1,4 @@
-import type { BlackboxEvent } from "agent-blackbox-core";
+import type { BlackboxEvent } from "nactograph-core";
 import { DiffView } from "./DiffView.js";
 import { TerminalOutput } from "./TerminalOutput.js";
 

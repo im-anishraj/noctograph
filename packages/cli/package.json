@@ -1,5 +1,5 @@
 {
-  "name": "agent-blackbox",
+  "name": "nactograph",
   "version": "0.1.0",
   "type": "module",
   "license": "MIT",
@@ -15,7 +15,7 @@
     "access": "public"
   },
   "bin": {
-    "agent-blackbox": "./dist/index.bundle.cjs"
+    "nactograph": "./dist/index.bundle.cjs"
   },
   "exports": {
     ".": {
@@ -36,7 +36,7 @@
     "simple-git": "^3.28.0"
   },
   "devDependencies": {
-    "agent-blackbox-core": "workspace:*",
+    "nactograph-core": "workspace:*",
     "@types/node": "^24.12.4",
     "esbuild": "^0.27.7",
     "tsx": "^4.19.4",

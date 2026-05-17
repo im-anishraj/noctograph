@@ -1,4 +1,4 @@
-import type { RiskFinding } from "agent-blackbox-core";
+import type { RiskFinding } from "nactograph-core";
 
 export function RiskSidebar({ findings }: { findings: RiskFinding[] }) {
   return (
