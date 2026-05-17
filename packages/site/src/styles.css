@@ -844,6 +844,19 @@ h2 {
 
 .riskSection {
   padding-top: 74px;
+  color: var(--ink);
+}
+
+.riskSection .eyebrow {
+  color: #a63e2b;
+}
+
+.riskSection h2 {
+  color: var(--ink);
+}
+
+.riskCopy p {
+  color: #53636b;
 }
 
 .riskStack {
