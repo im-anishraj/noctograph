@@ -1,7 +1,5 @@
 import { createRoot } from "react-dom/client";
-
-function App() {
-  return <main>Agent Blackbox report viewer</main>;
-}
+import { App } from "./App.js";
+import "./styles.css";
 
 createRoot(document.getElementById("root")!).render(<App />);
