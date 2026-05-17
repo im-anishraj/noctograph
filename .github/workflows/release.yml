@@ -9,12 +9,15 @@ permissions:
   contents: write
   id-token: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -22,10 +25,11 @@ jobs:
           version: 9.6.0
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
+          package-manager-cache: false
           registry-url: https://registry.npmjs.org
 
       - name: Install
@@ -44,5 +48,12 @@ jobs:
           gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 || gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --generate-notes
           gh release upload "${GITHUB_REF_NAME}" dist-binaries/* --clobber
 
+      - name: Pack CLI package
+        run: |
+          mkdir -p dist-pack
+          pnpm --dir packages/cli pack --pack-destination "$PWD/dist-pack"
+
       - name: Publish CLI package
-        run: pnpm --filter agent-blackbox publish --access public --provenance --no-git-checks
+        run: |
+          PACKAGE_VERSION="$(node -p "require('./packages/cli/package.json').version")"
+          npm publish "dist-pack/agent-blackbox-${PACKAGE_VERSION}.tgz" --access public
