@@ -16,6 +16,15 @@ export const captureEvents = [
   "SessionEnd"
 ] as const;
 
+export const liveCaptureLines = [
+  { label: "00:00.000", value: "SessionStart", tone: "teal" },
+  { label: "00:07.184", value: "CommandRun", tone: "ink" },
+  { label: "00:11.506", value: "CommandOutput", tone: "lime" },
+  { label: "00:19.402", value: "FileSnapshot", tone: "coral" },
+  { label: "00:38.819", value: "TestRun", tone: "teal" },
+  { label: "00:44.710", value: "SessionEnd", tone: "ink" }
+] as const;
+
 export const riskRules = [
   "secret_access",
   "dependency_added",
@@ -47,4 +56,15 @@ export const workflowSteps = [
   { title: "Redact early", text: "Strip secrets before they are persisted into reports." },
   { title: "Score risk", text: "Flag destructive commands, env writes, churn, and deleted tests." },
   { title: "Share proof", text: "Attach HTML, JSONL, or a PR comment to the review." }
+] as const;
+
+export const terminalLines = [
+  "$ nactograph run -- codex \"fix failing auth tests\"",
+  "SessionStart      git: 367ec65",
+  "CommandRun        codex fix failing auth tests",
+  "CommandOutput     184 lines captured",
+  "FileSnapshot      src/auth.test.ts  +42 -8",
+  "RedactionAudit    2 values masked",
+  "TestRun           18 passed",
+  "SessionEnd        blackbox-report.html ready"
 ] as const;

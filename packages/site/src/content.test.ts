@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { artifacts, captureEvents, metrics, riskRules, workflowSteps } from "./content";
+import { artifacts, captureEvents, liveCaptureLines, metrics, riskRules, terminalLines, workflowSteps } from "./content";
 
 describe("landing page content", () => {
   it("keeps the core product proof visible", () => {
@@ -12,5 +12,7 @@ describe("landing page content", () => {
       "blackbox-pr-comment.md"
     ]);
     expect(workflowSteps.at(0)?.title).toBe("Run agent");
+    expect(liveCaptureLines.map((line) => line.value)).toEqual(["SessionStart", "CommandRun", "CommandOutput", "FileSnapshot", "TestRun", "SessionEnd"]);
+    expect(terminalLines.at(-1)).toContain("blackbox-report.html");
   });
 });
