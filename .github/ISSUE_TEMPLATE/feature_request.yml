@@ -1,0 +1,49 @@
+name: Feature request
+description: Suggest a concrete improvement.
+title: "feat: "
+labels:
+  - type:feature
+  - status:needs design
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior, interface, or workflow you want.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CLI
+        - Core schemas
+        - Redaction
+        - Risk detector
+        - Git snapshots
+        - PTY capture
+        - Viewer/report
+        - Website/docs
+        - CI/release
+        - Integrations
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
