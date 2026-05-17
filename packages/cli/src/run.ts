@@ -1,4 +1,4 @@
-import { RedactionEngine, type BlackboxEvent, type BlackboxEventType } from "agent-blackbox-core";
+import { RedactionEngine, type BlackboxEvent, type BlackboxEventType } from "nactograph-core";
 import { randomUUID } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
@@ -28,7 +28,7 @@ export interface RunResult {
 
 export async function runBlackbox(options: RunOptions): Promise<RunResult> {
   if (options.command.length === 0) {
-    throw new Error("No command provided. Usage: agent-blackbox run -- <command>");
+    throw new Error("No command provided. Usage: nactograph run -- <command>");
   }
 
   const startedAt = Date.now();

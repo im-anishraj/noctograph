@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve Agent Blackbox.
+Thanks for helping improve Nactograph.
 
 ## Development
 

@@ -4,15 +4,15 @@ import { Command } from "commander";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { parsePatternFile } from "agent-blackbox-core";
+import { parsePatternFile } from "nactograph-core";
 import { runBlackbox } from "./run.js";
 
-export const cliPackageName = "agent-blackbox";
+export const cliPackageName = "nactograph";
 
 export function buildProgram(): Command {
   const program = new Command();
 
-  program.name("agent-blackbox").description("Local-first flight recorder for AI coding agents.").version("0.0.0");
+  program.name("nactograph").description("Local-first flight recorder for AI coding agents.").version("0.0.0");
 
   program
     .command("run")
