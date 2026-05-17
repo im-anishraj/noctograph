@@ -5,6 +5,7 @@ import path from "node:path";
 import { stripAnsi } from "./ansi.js";
 import { EventWriter } from "./event-writer.js";
 import { GitSnapshotter } from "./git-snapshot.js";
+import { generateReportArtifacts } from "./generators/report-artifacts.js";
 import { createPty, type PtyHandle } from "./pty-runner.js";
 
 export interface RunOptions {
@@ -21,6 +22,8 @@ export interface RunResult {
   signal: string | null;
   sessionId: string;
   jsonlPath: string;
+  htmlPath: string;
+  markdownPath: string;
 }
 
 export async function runBlackbox(options: RunOptions): Promise<RunResult> {
@@ -158,7 +161,8 @@ export async function runBlackbox(options: RunOptions): Promise<RunResult> {
         exitCode = exit.exitCode;
         signal ??= exit.signal === undefined ? null : String(exit.signal);
         await finish();
-        resolve({ exitCode, signal, sessionId, jsonlPath: writer.path });
+        const artifacts = await generateReportArtifacts(writer.path);
+        resolve({ exitCode, signal, sessionId, jsonlPath: writer.path, ...artifacts });
       }
     });
   });
