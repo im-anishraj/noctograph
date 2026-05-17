@@ -2,6 +2,7 @@
   "name": "agent-blackbox-core",
   "version": "0.1.0",
   "type": "module",
+  "private": true,
   "license": "MIT",
   "main": "./dist/index.js",
   "files": ["dist"],
@@ -9,9 +10,6 @@
     "type": "git",
     "url": "https://github.com/im-anishraj/noctograph.git",
     "directory": "packages/core"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "exports": {
     ".": {

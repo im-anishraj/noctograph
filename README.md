@@ -77,7 +77,7 @@ Default redaction catches common secret files, cloud tokens, GitHub and OpenAI k
 Each release publishes:
 
 - npm package: `agent-blackbox`
-- npm support package: `agent-blackbox-core`
+- bundled core runtime for schemas, redaction, and risk detection
 - binaries for Linux, macOS, and Windows
 
 ## Contributing
