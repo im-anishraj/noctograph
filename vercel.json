@@ -1,0 +1,13 @@
+{
+  "buildCommand": "pnpm --filter @nactograph/site build",
+  "devCommand": "pnpm --filter @nactograph/site dev --host 0.0.0.0",
+  "framework": "vite",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "outputDirectory": "packages/site/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
