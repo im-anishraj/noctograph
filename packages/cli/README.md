@@ -9,6 +9,17 @@ npm install -g nactograph
 nactograph run -- codex "fix failing auth tests"
 ```
 
+PowerShell:
+
+```powershell
+npm install -g nactograph
+nactograph run -- codex "fix failing auth tests"
+Set-Location blackbox-sessions
+$session = Get-ChildItem -Directory | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+Invoke-Item (Join-Path $session.FullName "blackbox-report.html")
+Get-Content (Join-Path $session.FullName "blackbox-pr-comment.md")
+```
+
 Outputs:
 
 ```text
