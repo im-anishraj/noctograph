@@ -78,6 +78,22 @@ cat */blackbox-pr-comment.md
 cat */blackbox.jsonl
 ```
 
+PowerShell:
+
+```powershell
+# 1. Run any coding agent or shell command through Nactograph
+nactograph run -- codex "fix failing auth tests"
+
+# 2. Open the newest report
+Set-Location blackbox-sessions
+$session = Get-ChildItem -Directory | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+Invoke-Item (Join-Path $session.FullName "blackbox-report.html")
+
+# 3. Use the generated review artifacts
+Get-Content (Join-Path $session.FullName "blackbox-pr-comment.md")
+Get-Content (Join-Path $session.FullName "blackbox.jsonl")
+```
+
 You can wrap any command:
 
 ```sh
