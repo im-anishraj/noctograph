@@ -162,6 +162,7 @@ Default redaction covers common secret files and values:
 
 - `.env`, `.env.*`, `*.pem`, `*.key`, `id_rsa`, `secrets.*`, `credentials.*`
 - `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `GITHUB_TOKEN`, `OPENAI_API_KEY`
+- Azure AD OAuth access tokens (JWTs)
 - long base64-like tokens
 - private IP ranges
 - localhost tokens in URLs
