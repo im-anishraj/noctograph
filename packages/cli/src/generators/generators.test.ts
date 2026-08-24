@@ -1,3 +1,7 @@
+import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 import { generateHtmlReport } from "./html.js";
 import { generateMarkdownReport } from "./markdown.js";
@@ -83,5 +87,23 @@ describe("report generators", () => {
     expect(html).toContain("window.__BLACKBOX_SESSION__");
     expect(html).toContain("Agent Blackbox Session");
     expect(html).toMatchSnapshot();
+  });
+
+  it("writes an offline-openable HTML report without external assets", async () => {
+    const html = generateHtmlReport(createSessionReportData(parseJsonlEvents(jsonl)));
+    const outputDir = await mkdtemp(join(tmpdir(), "nactograph-report-"));
+    const reportPath = join(outputDir, "blackbox-report.html");
+
+    await writeFile(reportPath, html, "utf8");
+
+    const reportFileUrl = pathToFileURL(reportPath);
+    const reopened = await readFile(reportFileUrl, "utf8");
+
+    expect(reportFileUrl.protocol).toBe("file:");
+    expect(reopened).toContain("<style>");
+    expect(reopened).toContain("window.__BLACKBOX_SESSION__");
+    expect(reopened).toContain("renderFilters");
+    expect(reopened).not.toMatch(/\s(?:href|src)=["'](?:https?:)?\/\//);
+    expect(reopened).not.toMatch(/\s(?:href|src)=["'][^"']+\.(?:css|js)/);
   });
 });
