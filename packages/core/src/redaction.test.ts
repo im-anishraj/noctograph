@@ -12,6 +12,16 @@ describe("RedactionEngine", () => {
     expect(engine.auditLog()).toHaveLength(2);
   });
 
+  it("redacts Azure AD OAuth access tokens (JWT format)", () => {
+    const engine = new RedactionEngine();
+    const token =
+      "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuYXp1cmUuY29tLyJ9.c2lnbmF0dXJlLXBhcnQtZXhhbXBsZQ";
+    const result = engine.redactText(`Authorization: Bearer ${token}`);
+
+    expect(result.text).toBe("Authorization: Bearer [REDACTED:azure_access_token]");
+    expect(JSON.stringify(result.audit)).not.toContain(token);
+  });
+
   it("redacts secret-like file contents by path", () => {
     const engine = new RedactionEngine();
     const result = engine.redactFileContent(".env.local", "OPENAI_API_KEY=sk-test");

@@ -126,6 +126,12 @@ export const defaultRedactionRules: RedactionRule[] = [
     replacement: "OPENAI_API_KEY=[REDACTED:openai_api_key]"
   },
   {
+    id: "azure_access_token",
+    description: "Azure AD OAuth access token (JWT)",
+    pattern: /\beyJ[A-Za-z0-9_-]{5,}\.eyJ[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{10,}\b/g,
+    replacement: "[REDACTED:azure_access_token]"
+  },
+  {
     id: "long_base64",
     description: "Generic long base64-like token",
     pattern: /(?<![A-Za-z0-9+/])[A-Za-z0-9+/]{40,}={0,2}(?![A-Za-z0-9+/=])/g,
